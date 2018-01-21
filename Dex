@@ -1,0 +1,135 @@
+#include<iostream>
+#include<stdio.h>
+ 
+using namespace std;
+ 
+int pointCheck(int n, int min_length[], int flag[])
+{
+        int i;
+        int result;
+        for(i=0; i < n; i++)
+                if(!(flag[i])) result = i;
+        for(i=0; i < n; i++)
+                if((min_length[result] > min_length[i])&&(!flag[i])) result = i;
+        return result;
+}
+ 
+int minim(int x, int y)
+{
+        if (x < y) return x;
+        return y;
+}
+ 
+int main()
+{
+        int n;
+        setlocale(LC_ALL, "rus");
+        cout << "Число точек: ";
+        cin >> n;
+        int *flag = new int[n];
+        int **adjacency_matrix = new int*[n];
+        for(int i = 0; i < n; i++)
+        {
+            adjacency_matrix[i] = new int[n];
+        }
+        int *min_length = new int[n];
+        int *count_ = new int[n];
+        for(int i = 0; i < n; i++)
+                for(int j=0; j < n; j++) adjacency_matrix[i][j]=0;
+        for(int i = 0; i < n; i++)
+                for(int j = i+1; j < n; j++)
+                {
+                    cout << " Длины рёбер  x " << i+1 << " дo x" << j+1 << ": ";
+                    cin >> adjacency_matrix[i][j];
+                }
+        cout << "   ";
+        for(int i = 0; i < n; i++) cout<<"    X" << i+1;
+        cout<< endl << endl;
+        for(int i = 0; i < n; i++)
+        {
+                printf("X%d", i+1);// так красиво,через cout феееее
+                for(int j = 0; j < n; j++)
+                {
+                        printf("%6d", adjacency_matrix[i][j]);
+                        adjacency_matrix[j][i]=adjacency_matrix[i][j];
+                }
+                printf("\n\n");
+        }
+        for(int i = 0; i < n; i++)
+                for(int j = i+1; j < n; j++)
+                {
+                    if (adjacency_matrix[i][j]< 0) adjacency_matrix[i][j] =0 ;
+                }
+        for(int i = 0; i < n; i++)
+                for(int j = 0; j < n; j++)
+                        if(adjacency_matrix[i][j] == 0) adjacency_matrix[i][j]=65535;
+        cout<< " Начальная точка: ";
+        int point_start;
+        cin >> point_start;
+        cout << " Конечная точка: ";
+        int point_end;
+        cin >> point_end;
+        point_end--;
+        point_start--;
+        if(point_start == point_end)
+        {
+                cout << "Начальная и конечные точки совпадают" << endl;
+                return 0;
+        }
+        for(int i = 0; i < n; i++)
+        {
+                flag[i]=0;
+                min_length[i]=65535;
+        }
+        min_length[point_start] = 0;
+        flag[point_start] = 1;
+        int length = 0;
+        int index = point_start;
+                count_[length] = point_start + 1;
+                do
+                {
+                        for(int i = 0; i < n; i++)
+                                if((adjacency_matrix[index][i]!=65535)&&(!flag[i])&&(i!=index))
+                                {
+ 
+                                        min_length[i] = minim(min_length[i],min_length[index]+adjacency_matrix[index][i]);
+                                }
+                        index = pointCheck(n, min_length, flag);
+                        flag[index] = 1;
+                }
+                while(index!=point_end);
+        int d = index;
+        length = 0;
+        count_[length] = point_end + 1;
+        while(d != point_start)
+        {
+            for(int i = 0; i < n; i++)
+            {
+                if(min_length[d] - min_length[i] == adjacency_matrix[i][d] )
+                    {
+                        length++;
+                        count_[length] = i+1;
+                        d = i;
+                    }
+            }
+        }
+        int *time_count_ = new int[length + 1];
+        for(int i = length; i >= 0 ; i--)
+        {
+            time_count_[length - i] = count_[i];
+        }
+        count_ = time_count_;
+        if(min_length[index]!=65535)
+        {
+                cout << "Путь: ";
+                for(int i = 0;i <= length; i++)
+                {
+                    cout << count_[i] << " ";
+                }
+                cout << endl;
+                cout << "Длина пути: " << min_length[index] << endl;
+        }
+        else
+                cout << "Путь не существует" << endl;
+        return 0;
+}
