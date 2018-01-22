@@ -12,7 +12,7 @@ int pointCheck(int n, int min_length[], int flag[])
                 if((min_length[result] > min_length[i])&&(!flag[i])) result = i;
         return result;
 }
- int scan ( int **arr, int n)
+ int scan  ( int **arr, int n)
  {
  for(int i = 0; i < n; i++)
                 for(int j=0; j < n; j++) arr[i][j]=0;
@@ -30,7 +30,7 @@ int pointCheck(int n, int min_length[], int flag[])
         cout<< endl << endl;
         for(int i = 0; i < n; i++)
         {
-                printf("X%d", i+1);// так красиво,через cout феееее
+                printf("X%d", i+1);
                 for(int j = 0; j < n; j++)
                 {
                         printf("%6d", arr[i][j]);
@@ -44,37 +44,19 @@ int minim(int x, int y)
         if (x < y) return x;
         return y;
 }
-
-int main()
+int calculate(int **arr, int n, int point_start, int point_end)
 {
-        int n;
-        setlocale(LC_ALL, "rus");
-        cout << "Число точек: ";
-        cin >> n;
-        int *min_length = new int[n];
-        int *count_ = new int[n];
-        int *flag = new int[n];
-        int **adjacency_matrix = new int*[n];
-        for(int i = 0; i < n; i++)
-        {
-            adjacency_matrix[i] = new int[n];
-        }
-        scan(adjacency_matrix, n );
-        print(adjacency_matrix, n);
-        for(int i = 0; i < n; i++)
+    int *min_length = new int[n];
+    int *count_ = new int[n];
+    int *flag = new int[n];
+ for(int i = 0; i < n; i++)
                 for(int j = i+1; j < n; j++)
                 {
-                    if (adjacency_matrix[i][j]< 0) adjacency_matrix[i][j] =0 ;
+                    if (arr[i][j]< 0) arr[i][j] =0 ;
                 }
         for(int i = 0; i < n; i++)
                 for(int j = 0; j < n; j++)
-                        if(adjacency_matrix[i][j] == 0) adjacency_matrix[i][j]=65535;
-        cout<< " Начальная точка: ";
-        int point_start;
-        cin >> point_start;
-        cout << " Конечная точка: ";
-        int point_end;
-        cin >> point_end;
+                        if(arr[i][j] == 0) arr[i][j]=65535;
         point_end--;
         point_start--;
         if(point_start == point_end)
@@ -95,10 +77,10 @@ int main()
                 do
                 {
                         for(int i = 0; i < n; i++)
-                                if((adjacency_matrix[index][i]!=65535)&&(!flag[i])&&(i!=index))
+                                if((arr[index][i]!=65535)&&(!flag[i])&&(i!=index))
                                 {
 
-                                        min_length[i] = minim(min_length[i],min_length[index]+adjacency_matrix[index][i]);
+                                        min_length[i] = minim(min_length[i],min_length[index]+arr[index][i]);
                                 }
                         index = pointCheck(n, min_length, flag);
                         flag[index] = 1;
@@ -111,7 +93,7 @@ int main()
         {
             for(int i = 0; i < n; i++)
             {
-                if(min_length[d] - min_length[i] == adjacency_matrix[i][d] )
+                if(min_length[d] - min_length[i] == arr[i][d] )
                     {
                         length++;
                         count_[length] = i+1;
@@ -137,5 +119,27 @@ int main()
         }
         else
                 cout << "Путь не существует" << endl;
+}
+
+int main()
+{
+        setlocale(LC_ALL, "rus");
+        int n;
+        cout << "Число точек: ";
+        cin >> n;
+        int **adjacency_matrix = new int*[n];
+        for(int i = 0; i < n; i++)
+        {
+            adjacency_matrix[i] = new int[n];
+        }
+        scan(adjacency_matrix, n );
+        print(adjacency_matrix, n);
+        cout<< " Начальная точка: ";
+        int point_start;
+        cin >> point_start;
+        cout << " Конечная точка: ";
+        int point_end;
+        cin >> point_end;
+        calculate(adjacency_matrix, n,  point_start, point_end);
         return 0;
 }
